@@ -9,7 +9,7 @@
   </header>
 
   <form class="page__section">
-    <h1 class="page__title">Реєстрація</h1>
+    <h1 class="page__title">Entry</h1>
 
     <div class="form">
        <div class="form__item">
@@ -20,25 +20,13 @@
         {{> field-password action='signupForm.change' label="Password" name="password" placeholder="Your password"}}
         <span name="password" class="form__error">Помилка</span>
        </div>
-        <div class="form__item">
-        {{> field-password action='signupForm.change' label="Password again"  name="passwordAgain" placeholder="Your password"}}
-        <span name="passwordAgain" class="form__error">Помилка</span>
-       </div>
-        <div class="form__item">
-        {{> field-select action='signupForm.change' label="Role"  name="role" placeholder="Selecr role" list=data.role}}
-        <span name="role" class="form__error">Помилка</span>
-       </div>
-       <div class="form__item">
-        {{> field-checkox action='signupForm.change' label="You trust the rules of the server"  name="isComfirm"}}
-        <span name="isComfirm" class="form__error">Помилка</span>
-       </div>
     </div>
 
-    <button onclick="signupForm.submit()" class="button button--disabled" type="button">Зареєструватися</button>
+    <button onclick="signupForm.submit()" class="button button--disabled" type="button">Enter</button>
 
     <span class="alert alert--disabled">Увага, помилка!</span>
 
-    <span class="link__prefix">You have accoutn? <a href="/login" class="link">Enter</a></span>
+    <span class="link__prefix">Forgot password? <a href="/recovery" class="link">Restore</a></span>
 
   </form>
 </div>

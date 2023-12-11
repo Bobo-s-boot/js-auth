@@ -1,4 +1,5 @@
 import { Session } from '../../class/session'
+import { use } from '../../route/auth'
 import {
   Form,
   REG_EXP_EMAIL,
@@ -11,19 +12,11 @@ class SignupForm extends Form {
   FIELD_NAME = {
     EMAIL: 'email',
     PASSWORD: 'password',
-    PASSWORD_AGAIN: 'passwordAgain',
-    ROLE: 'role',
-    IS_COMFIRM: 'isComfirm',
   }
   FIELD_ERROR = {
     IS_EMPTY: 'Write value in field',
     IS_BIG: 'So long value, remove the excess',
     EMAIL: 'Write corect value email adress',
-    PASSWORD: 'Password need consist of 8 characters ',
-    PASSWORD_AGAIN:
-      'Your secondary password not similar to the first',
-    NOT_COMFIRM: 'You don`t confirm rules',
-    ROLE: 'Yon don`t choice role',
   }
 
   validate = (name, value) => {
@@ -40,33 +33,6 @@ class SignupForm extends Form {
         return this.FIELD_ERROR.EMAIL
       }
     }
-
-    if (name === this.FIELD_NAME.PASSWORD) {
-      if (!REG_EXP_PASSWORD.test(String(value))) {
-        return this.FIELD_ERROR.PASSWORD
-      }
-    }
-
-    if (name === this.FIELD_NAME.PASSWORD_AGAIN) {
-      if (
-        String(value) !==
-        this.value[this.FIELD_NAME.PASSWORD]
-      ) {
-        return this.FIELD_ERROR.PASSWORD_AGAIN
-      }
-    }
-
-    if (name === this.FIELD_NAME.ROLE) {
-      if (isNaN(value)) {
-        return this.FIELD_ERROR.ROLE
-      }
-    }
-
-    if (name === this.FIELD_NAME.IS_COMFIRM) {
-      if (Boolean(value) !== true) {
-        return this.FIELD_ERROR.NOT_COMFIRM
-      }
-    }
   }
 
   submit = async () => {
@@ -78,7 +44,7 @@ class SignupForm extends Form {
       this.setAlert('progress', 'Download...')
 
       try {
-        const res = await fetch('/signup', {
+        const res = await fetch('/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -107,10 +73,14 @@ class SignupForm extends Form {
         this.value[this.FIELD_NAME.EMAIL],
       [this.FIELD_NAME.PASSWORD]:
         this.value[this.FIELD_NAME.PASSWORD],
-      [this.FIELD_NAME.ROLE]:
-        this.value[this.FIELD_NAME.ROLE],
     })
   }
 }
 
 window.signupForm = new SignupForm()
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.session) {
+    location.assign('/')
+  }
+})

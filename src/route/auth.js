@@ -5,6 +5,8 @@ const router = express.Router()
 
 const { User } = require('../class/user')
 const { Confirm } = require('../class/confirm')
+const { Session } = require('../class/session')
+const { token } = require('morgan')
 
 User.create({
   email: 'test@email.com',
@@ -75,10 +77,15 @@ router.post('/signup', function (req, res) {
       })
     }
 
-    User.create({ email, password, role })
+    const newUser = User.create({ email, password, role })
+
+    const session = Session.create(newUser)
+
+    Confirm.create(newUser.email)
 
     return res.status(200).json({
       message: 'User greate register',
+      session,
     })
   } catch (err) {
     return res.status(400).json({
@@ -175,8 +182,124 @@ router.post('/recovery-confirm', function (req, res) {
 
     console.log(user)
 
+    const session = Session.create(user)
+
     return res.status(200).json({
       message: 'Password change',
+      session,
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message,
+    })
+  }
+})
+
+router.get('/signup-confirm', function (req, res) {
+  const { renew, email } = req.query
+
+  if (renew) {
+    Confirm.create(email)
+  }
+
+  return res.render('signup-confirm', {
+    name: 'signup-confirm',
+
+    component: ['back-button', 'field'],
+
+    title: 'Signup confirm page',
+
+    data: {},
+  })
+})
+
+router.post('/signup-confirm', function (req, res) {
+  const { code, token } = req.body
+
+  if (!code || !token) {
+    return res.status(400).json({
+      message: 'Error, fill in the required fields',
+    })
+  }
+
+  try {
+    const session = Session.get(token)
+
+    if (!session) {
+      return res.status(400).json({
+        message: 'Erorr, you don`t go to account',
+      })
+    }
+
+    const email = Confirm.getData(code)
+
+    if (!email) {
+      return res.status(400).json({
+        message: 'Code not real',
+      })
+    }
+
+    if (email !== session.user.email) {
+      return res.status(400).json({
+        message: 'Code not active',
+      })
+    }
+
+    const user = User.getByEmail(session.user.email)
+    user.isConfirm = true
+    session.user.isConfirm = true
+
+    return res.status(200).json({
+      message: 'You confirm your email',
+      session,
+    })
+  } catch (err) {
+    res.status(400).json({
+      message: err.message,
+    })
+  }
+})
+
+router.get('/login', function (req, res) {
+  return res.render('login', {
+    name: 'login',
+
+    component: ['back-button', 'field', 'field-password'],
+
+    title: 'Login page',
+    data: {},
+  })
+})
+
+router.post('/login', function (req, res) {
+  const { email, password } = req.body
+
+  if (!email || !password) {
+    return res.status(400).json({
+      message: 'Error,fill in the required fields',
+    })
+  }
+
+  try {
+    const user = User.getByEmail(email)
+
+    if (!user) {
+      return res.status(400).json({
+        message: 'Error, User not find',
+      })
+    }
+
+    if (user.password !== password) {
+      return res.status(400).json({
+        message: 'Error, not corect password',
+      })
+    }
+
+    const session = Session.create(user)
+
+    return res.status(200).json({
+      message: 'You entry',
+      session,
     })
   } catch (err) {
     return res.status(400).json({
