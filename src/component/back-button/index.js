@@ -4,4 +4,4 @@ class BackButton {
   }
 }
 
-window.BackButton = BackButton
+window.backButton = BackButton

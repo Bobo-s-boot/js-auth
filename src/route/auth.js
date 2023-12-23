@@ -6,12 +6,23 @@ const router = express.Router()
 const { User } = require('../class/user')
 const { Confirm } = require('../class/confirm')
 const { Session } = require('../class/session')
-const { token } = require('morgan')
 
 User.create({
   email: 'test@email.com',
   password: 123,
   role: 1,
+})
+
+User.create({
+  email: 'admim@email.com',
+  password: 123,
+  role: 2,
+})
+
+User.create({
+  email: 'dev@email.com',
+  password: 123,
+  role: 3,
 })
 
 // ================================================================
